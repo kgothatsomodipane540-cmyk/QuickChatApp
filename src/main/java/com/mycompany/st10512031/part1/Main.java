@@ -6,66 +6,65 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Scanner input = new Scanner(System.in);
-        Login loginSystem = new Login();
-        
-        System.out.println("========================================");
-        System.out.println("   Welcome to QuickChat Registration    ");
-        System.out.println("========================================");
-        System.out.println();
-        
-        // REGISTRATION
-        System.out.println("--- REGISTRATION ---");
-        
-        System.out.print("Enter your first name: ");
-        String firstName = input.nextLine();
-        
-        System.out.print("Enter your last name: ");
-        String lastName = input.nextLine();
-        
-        System.out.print("Enter a username (must contain '_' and be no more than 5 characters): ");
-        String username = input.nextLine();
-        
-        System.out.print("Enter a password (min 8 chars, 1 capital, 1 number, 1 special char): ");
-        String password = input.nextLine();
-        
-        System.out.print("Enter your cell phone number (e.g., +27831234567): ");
-        String cellPhone = input.nextLine();
-        
-        String registrationResult = loginSystem.registerUser(
-                username, password, cellPhone, firstName, lastName
-        );
-        
-        System.out.println();
-        System.out.println(registrationResult);
-        System.out.println();
-        
-        // LOGIN
-        if (registrationResult.contains("User registered successfully")) {
-            System.out.println("--- LOGIN ---");
+        try (Scanner input = new Scanner(System.in)) {
+            Login loginSystem = new Login();
             
-            System.out.print("Enter your username: ");
-            String loginUsername = input.nextLine();
+            System.out.println("========================================");
+            System.out.println("   Welcome to QuickChat Registration    ");
+            System.out.println("========================================");
+            System.out.println();
             
-            System.out.print("Enter your password: ");
-            String loginPassword = input.nextLine();
+            // REGISTRATION
+            System.out.println("--- REGISTRATION ---");
             
-            boolean loginSuccess = loginSystem.loginUser(loginUsername, loginPassword);
-            String statusMessage = loginSystem.returnLoginStatus(loginSuccess);
+            System.out.print("Enter your first name: ");
+            String firstName = input.nextLine();
+            
+            System.out.print("Enter your last name: ");
+            String lastName = input.nextLine();
+            
+            System.out.print("Enter a username (must contain '_' and be no more than 5 characters): ");
+            String username = input.nextLine();
+            
+            System.out.print("Enter a password (min 8 chars, 1 capital, 1 number, 1 special char): ");
+            String password = input.nextLine();
+            
+            System.out.print("Enter your cell phone number (e.g., +27831234567): ");
+            String cellPhone = input.nextLine();
+            
+            String registrationResult = loginSystem.registerUser(
+                    username, password, cellPhone, firstName, lastName
+            );
             
             System.out.println();
-            System.out.println(statusMessage);
+            System.out.println(registrationResult);
+            System.out.println();
             
-            // PART 2 START
-            if (loginSuccess) {
-                runQuickChat(input);
+            // LOGIN
+            if (registrationResult.contains("User registered successfully")) {
+                System.out.println("--- LOGIN ---");
+                
+                System.out.print("Enter your username: ");
+                String loginUsername = input.nextLine();
+                
+                System.out.print("Enter your password: ");
+                String loginPassword = input.nextLine();
+                
+                boolean loginSuccess = loginSystem.loginUser(loginUsername, loginPassword);
+                String statusMessage = loginSystem.returnLoginStatus(loginSuccess);
+                
+                System.out.println();
+                System.out.println(statusMessage);
+                
+                // PART 2 START
+                if (loginSuccess) {
+                    runQuickChat(input);
+                }
+                
+            } else {
+                System.out.println("Registration failed. Please try again.");
             }
-            
-        } else {
-            System.out.println("Registration failed. Please try again.");
         }
-        
-        input.close();
     }
 
     public static void runQuickChat(Scanner input) {
