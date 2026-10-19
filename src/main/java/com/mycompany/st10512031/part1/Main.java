@@ -13,91 +13,130 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // Create a Scanner object to read input from the keyboard
         Scanner scanner = new Scanner(System.in);
-
-        // Create a Login object to handle registration and login
         Login loginSystem = new Login();
-
+        
         System.out.println("========================================");
         System.out.println("   Welcome to QuickChat Registration    ");
         System.out.println("========================================");
         System.out.println();
-
+        
         // ==================== REGISTRATION ====================
-
         System.out.println("--- REGISTRATION ---");
-
-        // Prompt for first name
+        
         System.out.print("Enter your first name: ");
         String firstName = scanner.nextLine();
-
-        // Prompt for last name
+        
         System.out.print("Enter your last name: ");
         String lastName = scanner.nextLine();
-
-        // Prompt for username
-        System.out.print("Enter a username "
-                + "(must contain '_' and be no more than 5 characters): ");
+        
+        System.out.print("Enter a username (must contain '_' and be no more than 5 characters): ");
         String username = scanner.nextLine();
-
-        // Prompt for password
-        System.out.print("Enter a password "
-                + "(min 8 chars, 1 capital, 1 number, 1 special char): ");
+        
+        System.out.print("Enter a password (min 8 chars, 1 capital, 1 number, 1 special char): ");
         String password = scanner.nextLine();
-
-        // Prompt for cell phone number
-        System.out.print("Enter your cell phone number "
-                + "(e.g., +27831234567): ");
+        
+        System.out.print("Enter your cell phone number (e.g., +27831234567): ");
         String cellPhone = scanner.nextLine();
-
-        // Register the user
+        
         String registrationResult = loginSystem.registerUser(
-                username,
-                password,
-                cellPhone,
-                firstName,
-                lastName
+                username, password, cellPhone, firstName, lastName
         );
-
-        // Display registration result
+        
         System.out.println();
         System.out.println(registrationResult);
         System.out.println();
-
+        
         // ==================== LOGIN ====================
-
-        // Only proceed to login if registration was successful
         if (registrationResult.contains("User registered successfully")) {
-
             System.out.println("--- LOGIN ---");
-
-            // Prompt for username
+            
             System.out.print("Enter your username: ");
             String loginUsername = scanner.nextLine();
-
-            // Prompt for password
+            
             System.out.print("Enter your password: ");
             String loginPassword = scanner.nextLine();
-
-            // Verify login details
-            boolean loginSuccess = loginSystem.loginUser(
-                    loginUsername,
-                    loginPassword
-            );
-
-            // Display login status
+            
+            boolean loginSuccess = loginSystem.loginUser(loginUsername, loginPassword);
             String statusMessage = loginSystem.returnLoginStatus(loginSuccess);
-
+            
             System.out.println();
             System.out.println(statusMessage);
-
+            
+            // ==================== PART 2: START QUICKCHAT ====================
+            if (loginSuccess) {
+                runQuickChat(scanner);
+            }
+            
         } else {
-
             System.out.println("Registration failed. Please try again.");
         }
-
-        // Close the Scanner
+        
         scanner.close();
+    }
+
+    // ==================== PART 2 METHODS ====================
+    
+    public static void runQuickChat(Scanner input) {
+        System.out.println("\nWelcome to QuickChat.");
+
+        boolean running = true;
+        while (running) {
+            System.out.println("\nPlease choose an option:");
+            System.out.println("1) Send Messages");
+            System.out.println("2) Show recently sent messages");
+            System.out.println("3) Quit");
+            System.out.print(">> ");
+            
+            int choice = input.nextInt();
+            input.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    sendMessagesFlow(input);
+                    break;
+                case 2:
+                    System.out.println("Coming Soon.");
+                    break;
+                case 3:
+                    System.out.println("Goodbye!");
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
+    public static void sendMessagesFlow(Scanner input) {
+        System.out.print("\nHow many messages do you wish to enter? >> ");
+        int numMessages = input.nextInt();
+        input.nextLine(); 
+
+        for (int i = 0; i < numMessages; i++) {
+            System.out.println("\n--- Message " + (i + 1) + " of " + numMessages + " ---");
+            
+            System.out.print("Enter recipient cell number (with international code): ");
+            String recipient = input.nextLine();
+            
+            System.out.print("Enter your message (max 250 characters): ");
+            String messageText = input.nextLine();
+            
+            while (messageText.length() > 250) {
+                System.out.println("Please enter a message of less than 250 characters.");
+                System.out.print("Enter your message >> ");
+                messageText = input.nextLine();
+            }
+
+            Message newMessage = new Message(recipient, messageText);
+            
+            System.out.println(newMessage.checkRecipientCell());
+            System.out.println(newMessage.printMessages());
+            
+            String actionResult = newMessage.SentMessage();
+            System.out.println(actionResult);
+        }
+        
+        System.out.println("\nTotal messages sent: " + Message.returnTotalMessages());
     }
 }
