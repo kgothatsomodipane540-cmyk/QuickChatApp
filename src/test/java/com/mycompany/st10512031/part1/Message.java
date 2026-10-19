@@ -1,10 +1,9 @@
 package com.mycompany.st10512031.part1;
 
-import java.util.Random;
 import java.util.Scanner;
 import java.util.ArrayList;
 
-public final class Message {
+public class Message {
 
     private final String messageID;
     private final int messageNumber;
@@ -35,7 +34,7 @@ public final class Message {
         }
     }
 
-    public String createMessageHash() {
+    public final String createMessageHash() {
         String firstTwoID = this.messageID.substring(0, 2);
         String firstWord = "";
         String lastWord = "";
@@ -57,6 +56,7 @@ public final class Message {
         int choice = scanner.nextInt();
         scanner.nextLine();
 
+        // Traditional switch statement as taught in Chapter 5
         switch (choice) {
             case 1 -> {
                 totalMessagesSent++;
@@ -76,9 +76,11 @@ public final class Message {
     }
 
     public String printMessages() {
-        return "\nMessage ID: " + this.messageID +
-               "\nMessage Hash: " + this.messageHash +
-               "\nRecipient: " + this.recipient +
+        return """
+               
+               Recipient: 
+               Message ID: """ + this.messageID +
+                "\nMessage Hash: " + this.messageHash + this.recipient +
                "\nMessage: " + this.messageText;
     }
 
@@ -86,9 +88,9 @@ public final class Message {
         return totalMessagesSent;
     }
 
+    // Using Math.random() as taught in Appendix D of the textbook
     private String generateMessageID() {
-        Random rand = new Random();
-        long id = 1000000000L + (long)(rand.nextDouble() * 9000000000L);
+        long id = 1000000000L + (long)(Math.random() * 9000000000L);
         return String.valueOf(id);
     }
 
