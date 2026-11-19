@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MessageTest {
@@ -41,6 +42,7 @@ public class MessageTest {
         new File(TEST_JSON_FILE).delete();
         Message.clearAll();
         Message.setJsonFilePath("storedMessages.json");
+        Message.setSender("Unknown");
     }
 
     // Fills the arrays with the 5 messages from the Part 3 brief
@@ -140,6 +142,17 @@ public class MessageTest {
         assertEquals("Message ID generated: 1234567890", m.messageIDGenerated());
     }
 
+    // Details must show in this order: ID, hash, recipient, message
+    @Test
+    public void testPrintMessagesOrder() {
+        Message m = new Message("0012345678", 0, P2_RECIPIENT_1, P2_TEXT_1);
+        String expected = "Message ID: 0012345678"
+                + "\nMessage Hash: 00:0:HITONIGHT"
+                + "\nRecipient: +27718693002"
+                + "\nMessage: Hi Mike, can you join us for dinner tonight?";
+        assertEquals(expected, m.printMessages());
+    }
+
     @Test
     public void testSendMessage() {
         Message m = new Message(0, P2_RECIPIENT_1, P2_TEXT_1);
@@ -188,6 +201,22 @@ public class MessageTest {
         assertEquals(5, Message.getMessageIDs().length);
     }
 
+    // The hash and ID arrays hold every message's hash and ID, in the order they were added
+    @Test
+    public void testHashAndIDArrayContents() {
+        loadPart3TestData();
+
+        String[] expectedHashes = {
+            "10:0:DIDCAKE", "20:1:WHERETIME", "30:2:YOHOOOOGATE", "08:3:ITTIME", "50:4:OKYOU"
+        };
+        String[] expectedIDs = {
+            "1000000001", "2000000002", "3000000003", "0838884567", "5000000005"
+        };
+
+        assertArrayEquals(expectedHashes, Message.getMessageHashes());
+        assertArrayEquals(expectedIDs, Message.getMessageIDs());
+    }
+
     @Test
     public void testStoredMessagesReadFromJson() {
         loadPart3TestData();
@@ -199,6 +228,17 @@ public class MessageTest {
         assertEquals(2, stored.length);
         assertEquals(TEXT_2, stored[0].getMessageText());
         assertEquals(TEXT_5, stored[1].getMessageText());
+    }
+
+    // Menu feature (a): sender and recipient of every stored message
+    @Test
+    public void testDisplaySenderAndRecipient() {
+        Message.setSender("+27682610145");
+        loadPart3TestData();
+
+        String expected = "Sender: +27682610145 | Recipient: +27838884567\n"
+                + "Sender: +27682610145 | Recipient: +27838884567";
+        assertEquals(expected, Message.displaySenderAndRecipient());
     }
 
     @Test
@@ -217,6 +257,12 @@ public class MessageTest {
     }
 
     @Test
+    public void testSearchByUnknownMessageID() {
+        loadPart3TestData();
+        assertNull(Message.findByMessageID("0000000000"));
+    }
+
+    @Test
     public void testSearchByRecipient() {
         loadPart3TestData();
         String[] expected = {
@@ -224,6 +270,12 @@ public class MessageTest {
             "Ok, I am leaving without you."
         };
         assertArrayEquals(expected, Message.searchByRecipient("+27838884567"));
+    }
+
+    @Test
+    public void testSearchByUnknownRecipient() {
+        loadPart3TestData();
+        assertEquals(0, Message.searchByRecipient("+27000000000").length);
     }
 
     @Test
@@ -254,5 +306,10 @@ public class MessageTest {
             assertTrue(report.contains(sentMessage.getRecipient()));
             assertTrue(report.contains(sentMessage.getMessageText()));
         }
+    }
+
+    @Test
+    public void testEmptyReport() {
+        assertEquals("No messages to report.", Message.buildReport(Message.getStoredMessages()));
     }
 }
