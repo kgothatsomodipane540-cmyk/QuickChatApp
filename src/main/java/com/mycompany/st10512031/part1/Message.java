@@ -1,15 +1,22 @@
 package com.mycompany.st10512031.part1;
 
 import java.io.BufferedReader;
-import java.io.FileWriter;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+/**
+ * Message class for the QuickChat app.
+ * Holds one message (ID, number, recipient, text and hash) and keeps the
+ * static arrays of sent, disregarded and stored messages, hashes and IDs.
+ * Also contains the search, delete and report features for stored messages,
+ * and saves/reads the stored messages to/from a JSON file.
+ */
 public class Message {
 
     // Maximum number of messages each array can hold
@@ -147,25 +154,36 @@ public class Message {
     // ---------------------------------------------------------------
 
     // Writes all stored messages to a JSON file.
-    // Source: [REPLACE WITH YOUR REFERENCE - e.g. the textbook chapter on
-    // file output, or the Java docs for FileWriter/PrintWriter]
+    // Source: writing the file with BufferedWriter (write and newLine) follows
+    // Farrell (2016), Java Programming, 8th edn, Chapter 13, Figure 13-21 and
+    // Table 13-6, pp. 688-689.
     public static void saveStoredMessagesToJson(String filePath) {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
-            writer.println("[");
+        Path file = Paths.get(filePath);
+
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(Files.newOutputStream(file)))) {
+
+            writeLine(writer, "[");
             for (int i = 0; i < storedCount; i++) {
                 Message m = storedMessages[i];
-                writer.println("  {");
-                writer.println("    \"messageID\": \"" + escapeJson(m.messageID) + "\",");
-                writer.println("    \"messageNumber\": " + m.messageNumber + ",");
-                writer.println("    \"messageHash\": \"" + escapeJson(m.messageHash) + "\",");
-                writer.println("    \"recipient\": \"" + escapeJson(m.recipient) + "\",");
-                writer.println("    \"message\": \"" + escapeJson(m.messageText) + "\"");
-                writer.println("  }" + (i < storedCount - 1 ? "," : ""));
+                writeLine(writer, "  {");
+                writeLine(writer, "    \"messageID\": \"" + escapeJson(m.messageID) + "\",");
+                writeLine(writer, "    \"messageNumber\": " + m.messageNumber + ",");
+                writeLine(writer, "    \"messageHash\": \"" + escapeJson(m.messageHash) + "\",");
+                writeLine(writer, "    \"recipient\": \"" + escapeJson(m.recipient) + "\",");
+                writeLine(writer, "    \"message\": \"" + escapeJson(m.messageText) + "\"");
+                writeLine(writer, "  }" + (i < storedCount - 1 ? "," : ""));
             }
-            writer.println("]");
+            writeLine(writer, "]");
         } catch (IOException e) {
             System.out.println("Could not save messages to JSON file.");
         }
+    }
+
+    // Writes one line of text followed by the platform's line separator
+    private static void writeLine(BufferedWriter writer, String text) throws IOException {
+        writer.write(text, 0, text.length());
+        writer.newLine();
     }
 
     // Reads the default JSON file into the storedMessages array
@@ -176,7 +194,6 @@ public class Message {
     // Reads the JSON file back into the storedMessages array.
     // Source: file reading with BufferedReader follows Farrell (2016),
     // Java Programming, 8th edn, Chapter 13, Figure 13-19, p. 686.
-    // [ADD ANY ONLINE PAGE YOU ALSO USED, e.g. the Oracle Java API page for BufferedReader]
     public static void loadStoredMessagesFromJson(String filePath) {
         // Start with an empty array, then fill it from the file
         storedMessages = new Message[MAX_MESSAGES];
