@@ -105,15 +105,25 @@ public class MessageTest {
         assertEquals("00:0:HITONIGHT", m.getMessageHash());
     }
 
-    // Remaining hashes tested in a loop
+    // The remaining message hashes tested in a loop, using the brief's test data.
+    // The four arrays line up: position i in each one belongs to the same message.
     @Test
     public void testMessageHashLoop() {
-        String[] texts = {"Hello world", "Good morning team", "See you soon"};
-        String[] expected = {"00:0:HELLOWORLD", "00:1:GOODTEAM", "00:2:SEESOON"};
+        String[] ids = {"0912345678", "1000000001", "2000000002", "3000000003", "0838884567", "5000000005"};
+        int[] numbers = {1, 0, 1, 2, 3, 4};
+        String[] texts = {P2_TEXT_2, TEXT_1, TEXT_2, TEXT_3, TEXT_4, TEXT_5};
+        String[] expectedHashes = {
+            "09:1:HIPAYMENT",
+            "10:0:DIDCAKE",
+            "20:1:WHERETIME",
+            "30:2:YOHOOOOGATE",
+            "08:3:ITTIME",
+            "50:4:OKYOU"
+        };
 
         for (int i = 0; i < texts.length; i++) {
-            Message m = new Message("0012345678", i, P2_RECIPIENT_1, texts[i]);
-            assertEquals(expected[i], m.getMessageHash());
+            Message m = new Message(ids[i], numbers[i], P2_RECIPIENT_1, texts[i]);
+            assertEquals(expectedHashes[i], m.getMessageHash());
         }
     }
 
@@ -239,10 +249,10 @@ public class MessageTest {
         Message[] sent = Message.getSentMessages();
         String report = Message.buildReport(sent);
 
-        for (Message sent1 : sent) {
-            assertTrue(report.contains(sent1.getMessageHash()));
-            assertTrue(report.contains(sent1.getRecipient()));
-            assertTrue(report.contains(sent1.getMessageText()));
+        for (Message sentMessage : sent) {
+            assertTrue(report.contains(sentMessage.getMessageHash()));
+            assertTrue(report.contains(sentMessage.getRecipient()));
+            assertTrue(report.contains(sentMessage.getMessageText()));
         }
     }
 }
