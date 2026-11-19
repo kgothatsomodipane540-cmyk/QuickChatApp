@@ -121,9 +121,10 @@ public class Main {
     public static void sendMessagesFlow(Scanner input) {
         int numMessages = readNumber(input, "\nHow many messages do you wish to enter? >> ");
 
-        // Traditional for loop (Chapter 6)
-        for (int i = 1; i <= numMessages; i++) {
-            System.out.println("\n--- Message " + i + " of " + numMessages + " ---");
+        // Traditional for loop (Chapter 6). The counter starts at 0, so the
+        // first message is number 0 (matches the brief's 00:0:HITONIGHT example).
+        for (int i = 0; i < numMessages; i++) {
+            System.out.println("\n--- Message " + (i + 1) + " of " + numMessages + " ---");
 
             // Re-ask until the cell number is valid (+27 only)
             System.out.print("Enter recipient cell number (e.g. +27831234567): ");
